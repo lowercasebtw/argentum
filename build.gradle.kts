@@ -61,21 +61,9 @@ allprojects {
     }
 }
 
-loom.runs.named("client") {
-    jvmArguments.add("-XstartOnFirstThread")
-
-    jvmArguments.add("-XX:+UseZGC")
-    jvmArguments.add("-XX:MaxGCPauseMillis=50")
-    jvmArguments.add("-XX:+UseCompactObjectHeaders")
-    jvmArguments.add("--enable-native-access=ALL-UNNAMED")
-    jvmArguments.add("--sun-misc-unsafe-memory-access=allow")
-
-    systemProperties.put("java.awt.headless", "true")
-    systemProperties.put("legacy_lwjgl3.use_sdl", "true")
-    systemProperties.put("devauth.enabled", "true")
-}
-
 loom {
+    uncompressNestedJars = true
+
     mods {
         create("celeritas") {
             sourceSet(sourceSets.main.get())
@@ -85,6 +73,20 @@ loom {
         }
     }
     runs {
+        named("client") {
+            jvmArguments.add("-XstartOnFirstThread")
+
+            jvmArguments.add("-XX:+UseZGC")
+            jvmArguments.add("-XX:MaxGCPauseMillis=50")
+            jvmArguments.add("-XX:+UseCompactObjectHeaders")
+            jvmArguments.add("--enable-native-access=ALL-UNNAMED")
+            jvmArguments.add("--sun-misc-unsafe-memory-access=allow")
+
+            systemProperties.put("java.awt.headless", "true")
+            systemProperties.put("legacy_lwjgl3.use_sdl", "true")
+            systemProperties.put("devauth.enabled", "true")
+        }
+
         create("fontTestClient") {
             inherit(getByName("client"))
             source(testmod)
