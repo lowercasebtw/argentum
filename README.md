@@ -17,4 +17,6 @@ Along with that, some other optimizations are planned:
 - Batching HUD draw calls
 - ...and more!
 
-A companion mod also exists under the [`extras`](/extras) folder, providing features analogous to [Sodium Extra](https://modrinth.com/mod/sodium-extra).
+A companion mod also exists under the [`extras`](/extras) folder, providing extra rendering customization and eye candy.
+
+The [`cera`](/cera) subproject reimplements MCPatcher/OptiFine resource pack extensions.
