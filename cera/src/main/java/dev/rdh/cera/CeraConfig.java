@@ -5,10 +5,10 @@ import dev.rdh.cera.modules.ctm.ConnectedTextures;
 import dev.rdh.cera.modules.DynamicLights;
 
 public class CeraConfig {
-    public BetterGrass.Mode betterGrass = BetterGrass.Mode.OFF;
-    public ConnectedTextures.Mode connectedTextures = ConnectedTextures.Mode.OFF;
-    public DynamicLights.Mode dynamicLights = DynamicLights.Mode.OFF;
-    public boolean naturalTextures = false;
+    public BetterGrass.Mode betterGrass = BetterGrass.Mode.FANCY;
+    public ConnectedTextures.Mode connectedTextures = ConnectedTextures.Mode.FANCY;
+    public DynamicLights.Mode dynamicLights = DynamicLights.Mode.FANCY;
+    public boolean naturalTextures = true;
 
     public void validate() {
         if (this.betterGrass == null) this.betterGrass = BetterGrass.Mode.OFF;
