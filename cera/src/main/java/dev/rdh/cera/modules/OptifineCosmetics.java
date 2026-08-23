@@ -38,7 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public final class OptifineCosmetics {
-    private static final String SERVER = "https://s.optifine.net";
+    @SuppressWarnings("HttpUrlsUsage")
+    private static final String SERVER = "http://s.optifine.net";
     private static final Pattern USERNAME = Pattern.compile("[A-Za-z0-9_]+");
     private static final Map<String, Cape> CAPES = new ConcurrentHashMap<>();
     private static final Map<String, List<Cosmetic>> COSMETICS = new ConcurrentHashMap<>();
