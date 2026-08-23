@@ -8,6 +8,7 @@ import net.ornithemc.osl.resource.loader.api.resource.repository.ResourcePackRep
 import dev.rdh.argentum.impl.config.JsonOptionStorage;
 import dev.rdh.cera.ext.CeraMinecraftExtension;
 import dev.rdh.cera.ext.CeraTextureAtlasExtension;
+import dev.rdh.cera.ext.CeraWorldRendererExtension;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,7 @@ public class Cera implements ClientModInitializer {
             Minecraft minecraft = Minecraft.getInstance();
             resources.addReloader(((CeraTextureAtlasExtension)minecraft.getBlocksAtlas()).cera$getNaturalTextures());
             resources.addReloader(((CeraMinecraftExtension)minecraft).cera$getDynamicLightRules());
+            resources.addReloader(((CeraWorldRendererExtension)minecraft.worldRenderer).cera$getCustomSky());
         });
     }
 

@@ -150,7 +150,10 @@ public record Props(NamespacedIdentifier id, Properties properties) {
 		int lastSlash = path.lastIndexOf('/');
 		String dir = lastSlash == -1 ? "" : path.substring(0, lastSlash + 1);
 
-		if (value.startsWith("~/")) {
+		if (value.startsWith("assets/")) {
+			String[] parts = value.split("/", 3);
+			if (parts.length == 3) return new Identifier(parts[1], parts[2]);
+		} else if (value.startsWith("~/")) {
 			int firstSlash = path.indexOf('/');
 			String root = firstSlash == -1 ? path : path.substring(0, firstSlash);
 			return new Identifier(current.namespace(), root + "/" + value.substring(2));

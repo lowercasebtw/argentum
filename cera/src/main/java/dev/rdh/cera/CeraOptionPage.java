@@ -36,6 +36,11 @@ final class CeraOptionPage {
                         .setBinding((config, value) -> config.naturalTextures = value, config -> config.naturalTextures)
                         .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
                         .build())
+                .add(OptionImpl.createBuilder(boolean.class, Cera.CONFIG_STORAGE)
+                        .setId(id("custom_sky"))
+                        .setControl(TickBoxControl::new)
+                        .setBinding((config, value) -> config.customSky = value, config -> config.customSky)
+                        .build())
                 .add(OptionImpl.createBuilder(int.class, Cera.CONFIG_STORAGE)
                         .setId(id("connected_textures"))
                         .setControl(option -> new SliderControl(option, 0, ConnectedTextures.Mode.values().length - 1, 1,
