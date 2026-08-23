@@ -8,7 +8,6 @@ import dev.rdh.cera.modules.BetterGrass;
 import dev.rdh.cera.modules.ctm.ConnectedTextures;
 import dev.rdh.cera.modules.ctm.CtmRenderContext;
 import dev.rdh.cera.modules.NaturalTextures;
-import dev.rdh.cera.ext.CeraTextureAtlasExtension;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import dev.rdh.argentum.impl.render.terrain.compile.PrimitiveBuiltRenderSectionData;
 import dev.rdh.argentum.impl.render.terrain.compile.pipeline.FastBlockRenderer;
@@ -40,14 +39,11 @@ import java.util.List;
 @Mixin(value = FastBlockRenderer.class, remap = false)
 public class FastBlockRendererMixin {
     @Unique
-    private final BetterGrass cera$betterGrass =
-            ((CeraTextureAtlasExtension)Minecraft.getInstance().getBlocksAtlas()).cera$getBetterGrass();
+    private final BetterGrass cera$betterGrass = Minecraft.getInstance().getBlocksAtlas().cera$getBetterGrass();
     @Unique
-    private final ConnectedTextures cera$connectedTextures =
-            ((CeraTextureAtlasExtension)Minecraft.getInstance().getBlocksAtlas()).cera$getConnectedTextures();
+    private final ConnectedTextures cera$connectedTextures = Minecraft.getInstance().getBlocksAtlas().cera$getConnectedTextures();
     @Unique
-    private final NaturalTextures cera$naturalTextures =
-            ((CeraTextureAtlasExtension)Minecraft.getInstance().getBlocksAtlas()).cera$getNaturalTextures();
+    private final NaturalTextures cera$naturalTextures = Minecraft.getInstance().getBlocksAtlas().cera$getNaturalTextures();
     @Unique
     private final List<ConnectedTextures.Overlay> cera$overlays = new ObjectArrayList<>();
     @Unique

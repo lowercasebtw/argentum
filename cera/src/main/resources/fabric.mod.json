@@ -10,6 +10,7 @@
   "entrypoints": {
     "client": ["dev.rdh.cera.Cera"]
   },
+  "accessWidener": "cera.classtweaker",
   "mixins": ["mixins.cera.json"],
   "depends": {
     "argentum": "*"

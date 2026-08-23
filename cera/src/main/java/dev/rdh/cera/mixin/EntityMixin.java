@@ -1,7 +1,7 @@
 package dev.rdh.cera.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import dev.rdh.cera.ext.CeraClientWorldExtension;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,8 +15,8 @@ public abstract class EntityMixin {
 
     @ModifyReturnValue(method = "getLightLevel", at = @At("RETURN"))
     private int cera$applyDynamicLight(int packedLight) {
-        return this.world instanceof CeraClientWorldExtension world
-                ? world.cera$getDynamicLights().combine((Entity)(Object)this, packedLight)
+        return this.world instanceof ClientWorld w
+                ? w.cera$getDynamicLights().combine((Entity)(Object)this, packedLight)
                 : packedLight;
     }
 }

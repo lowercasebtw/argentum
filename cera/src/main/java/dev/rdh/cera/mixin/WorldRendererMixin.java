@@ -2,7 +2,6 @@ package dev.rdh.cera.mixin;
 
 import dev.rdh.argentum.impl.ext.WorldRendererExtension;
 import dev.rdh.cera.Cera;
-import dev.rdh.cera.ext.CeraClientWorldExtension;
 import dev.rdh.cera.ext.CeraWorldRendererExtension;
 import dev.rdh.cera.modules.CustomSky;
 import net.minecraft.client.render.platform.GlStateManager;
@@ -34,7 +33,7 @@ public abstract class WorldRendererMixin implements CeraWorldRendererExtension {
     private void cera$updateDynamicLights(CallbackInfo ci) {
         if (this.world != null) {
             var renderer = ((WorldRendererExtension)this).argentum$getWorldRenderer();
-            ((CeraClientWorldExtension)this.world).cera$getDynamicLights().update(this.world, renderer);
+            this.world.cera$getDynamicLights().update(this.world, renderer);
         }
     }
 

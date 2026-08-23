@@ -5,3 +5,4 @@ inject-interface net/minecraft/client/entity/particle/Particle dev/rdh/argentum/
 inject-interface net/minecraft/client/render/texture/TextureAtlas dev/rdh/argentum/impl/ext/TextureAtlasExtension
 inject-interface net/minecraft/client/render/texture/TextureAtlasSprite dev/rdh/argentum/impl/ext/TextureAtlasSpriteExtension
 inject-interface net/minecraft/client/render/world/WorldRenderer dev/rdh/argentum/impl/ext/WorldRendererExtension
+inject-interface net/minecraft/client/render/texture/AbstractTexture dev/rdh/argentum/impl/ext/TextureGenerationExtension

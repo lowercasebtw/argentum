@@ -2,10 +2,10 @@ package dev.rdh.cera.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.rdh.cera.ext.CeraClientWorldExtension;
 import dev.rdh.argentum.impl.world.cloned.ChunkRenderContext;
 import dev.rdh.cera.modules.DynamicLights;
 import net.minecraft.block.state.BlockState;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +21,7 @@ public abstract class ChunkRenderContextMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void cera$setDynamicLights(CallbackInfo ci, @Local(argsOnly = true) World world) {
-        this.cera$dynamicLights = ((CeraClientWorldExtension)world).cera$getDynamicLights();
+        this.cera$dynamicLights = ((ClientWorld)world).cera$getDynamicLights();
     }
 
     @Shadow

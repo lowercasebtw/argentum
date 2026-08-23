@@ -2,6 +2,7 @@ package dev.rdh.cera.mixin;
 
 import dev.rdh.cera.modules.OptifineCosmetics;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -20,6 +21,7 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<ClientPla
 
     @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRenderDispatcher;Z)V", at = @At("RETURN"))
     private void cera$addOptifineCosmetics(EntityRenderDispatcher dispatcher, boolean thinArms, CallbackInfo ci) {
-        this.addLayer(new OptifineCosmetics.Layer((PlayerRenderer)(Object)this));
+        OptifineCosmetics cosmetics = Minecraft.getInstance().cera$getOptifineCosmetics();
+        this.addLayer(cosmetics.new Layer((PlayerRenderer)(Object)this));
     }
 }

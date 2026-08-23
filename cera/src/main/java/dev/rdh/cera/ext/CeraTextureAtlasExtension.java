@@ -5,9 +5,15 @@ import dev.rdh.cera.modules.NaturalTextures;
 import dev.rdh.cera.modules.ctm.ConnectedTextures;
 
 public interface CeraTextureAtlasExtension {
-    BetterGrass cera$getBetterGrass();
+    default BetterGrass cera$getBetterGrass() {
+        throw new UnsupportedOperationException();
+    }
 
-    ConnectedTextures cera$getConnectedTextures();
+    default ConnectedTextures cera$getConnectedTextures() {
+        throw new UnsupportedOperationException();
+    }
 
-    NaturalTextures cera$getNaturalTextures();
+    default NaturalTextures cera$getNaturalTextures() {
+        throw new UnsupportedOperationException();
+    }
 }

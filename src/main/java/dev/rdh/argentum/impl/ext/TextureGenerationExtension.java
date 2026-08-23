@@ -1,5 +1,7 @@
 package dev.rdh.argentum.impl.ext;
 
 public interface TextureGenerationExtension {
-    int argentum$getGeneration();
+    default int argentum$getGeneration() {
+        throw new UnsupportedOperationException();
+    }
 }

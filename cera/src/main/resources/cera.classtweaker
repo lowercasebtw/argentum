@@ -1,0 +1,5 @@
+classTweaker v2 named
+inject-interface net/minecraft/client/Minecraft dev/rdh/cera/ext/CeraMinecraftExtension
+inject-interface net/minecraft/client/world/ClientWorld dev/rdh/cera/ext/CeraClientWorldExtension
+inject-interface net/minecraft/client/render/texture/TextureAtlas dev/rdh/cera/ext/CeraTextureAtlasExtension
+inject-interface net/minecraft/client/render/world/WorldRenderer dev/rdh/cera/ext/CeraWorldRendererExtension

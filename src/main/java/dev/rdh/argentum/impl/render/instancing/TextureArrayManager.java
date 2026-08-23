@@ -1,12 +1,12 @@
 package dev.rdh.argentum.impl.render.instancing;
 
-import dev.rdh.argentum.impl.ext.TextureGenerationExtension;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.platform.GLX;
 import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.texture.AbstractTexture;
 import net.minecraft.client.render.texture.Texture;
 import net.minecraft.resource.Identifier;
 import org.lwjgl.opengl.EXTFramebufferObject;
@@ -87,8 +87,8 @@ public final class TextureArrayManager {
         }
 
         int sourceId = source.getGlId();
-        int generation = source instanceof TextureGenerationExtension extension
-                ? extension.argentum$getGeneration() : 0;
+        int generation = source instanceof AbstractTexture texture
+                ? texture.argentum$getGeneration() : 0;
         CachedTexture cached = this.textures.get(source);
         if (cached != null && cached.sourceId == sourceId && cached.generation == generation) {
             Layer layer = cached.pool.getLayer(location, source, sourceId, frame);
@@ -187,7 +187,6 @@ public final class TextureArrayManager {
         }
 
         private Layer getLayer(Identifier location, Texture source, int sourceId, int frame) {
-            Minecraft mc = Minecraft.getInstance();
             Layer layer = this.layers.getAndMoveToLast(location);
             if (layer != null && layer.source == source && layer.sourceId == sourceId) {
                 layer.frame = frame;
