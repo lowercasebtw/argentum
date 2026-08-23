@@ -25,6 +25,7 @@ public class ArgentumConfig {
     public boolean compactVertexFormat = false;
     public boolean checkGlErrors = false;
     public boolean fontBatching = true;
+    public boolean greedyRenderThread = false;
 
 	public void validate() {
         this.chunkBuilderThreads = Math.max(0, this.chunkBuilderThreads);

@@ -1,6 +1,8 @@
 package dev.rdh.argentum.mixin.core;
 
 import net.minecraft.client.Minecraft;
+
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import org.embeddedt.embeddium.impl.render.frame.RenderAheadManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +21,7 @@ public abstract class MinecraftMixin {
     private boolean logGlErrors;
 
     @Inject(method = "init", at = @At("RETURN"))
-    private void celeritas$configureGlErrorChecking(CallbackInfo ci) {
+    private void argentum$configureGlErrorChecking(CallbackInfo ci) {
         this.logGlErrors = Argentum.CONFIG.checkGlErrors;
     }
 
@@ -31,5 +33,10 @@ public abstract class MinecraftMixin {
     @Inject(method = "runGame", at = @At("RETURN"))
     private void celeritas$endFrame(CallbackInfo ci) {
         this.celeritas$renderAheadManager.endFrame();
+    }
+
+    @WrapWithCondition(method = "runGame", at = @At(value = "INVOKE", target = "Ljava/lang/Thread;yield()V"))
+    private boolean argentum$conditionallyYield() {
+        return !Argentum.CONFIG.greedyRenderThread;
     }
 }

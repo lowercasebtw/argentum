@@ -58,6 +58,7 @@ final class ArgentumOptionPages {
         private static final OptionIdentifier<Void> FONT_BATCHING = OptionIdentifier.create(Argentum.ID, "font_batching");
         private static final OptionIdentifier<Void> SAFE_CHUNK_EDGES = OptionIdentifier.create(Argentum.ID, "safe_chunk_edges");
         private static final OptionIdentifier<Void> CHECK_GL_ERRORS = OptionIdentifier.create(Argentum.ID, "check_gl_errors");
+        private static final OptionIdentifier<Void> GREEDY_RENDER_THREAD = OptionIdentifier.create(Argentum.ID, "greedy_render_thread");
     }
 
     private ArgentumOptionPages() {
@@ -283,6 +284,9 @@ final class ArgentumOptionPages {
                         OptionImpact.MEDIUM,
                         (config, value) -> config.compactVertexFormat = value, config -> config.compactVertexFormat,
                         OptionFlag.REQUIRES_RENDERER_RELOAD))
+                .add(toggle(Option.GREEDY_RENDER_THREAD,
+                        OptionImpact.MEDIUM,
+                        (config, value) -> config.greedyRenderThread = value, config -> config.greedyRenderThread))
                 .build();
 
         return page(Page.PERFORMANCE, chunkUpdates, culling, rendering);
