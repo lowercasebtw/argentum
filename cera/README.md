@@ -6,6 +6,7 @@ Cera is a companion mod for Argentum that reimplements MCPatcher/OptiFine resour
 - Dynamic lights
 - Natural textures
 - Better grass & snow
+- OptiFine Cosmetics (capes/seasonal hats)
 - Full configurability through Argentum's video settings menu
 
 Along with that, some other features are planned:
@@ -17,6 +18,5 @@ Along with that, some other features are planned:
 - Non-block animated textures
 - Custom colors
 - Random mob textures
-- OptiFine Cosmetics (capes/seasonal hats)
 
 Shaders will be their own mod.

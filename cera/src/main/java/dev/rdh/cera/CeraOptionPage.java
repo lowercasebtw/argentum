@@ -41,6 +41,11 @@ final class CeraOptionPage {
                         .setControl(TickBoxControl::new)
                         .setBinding((config, value) -> config.customSky = value, config -> config.customSky)
                         .build())
+                .add(OptionImpl.createBuilder(boolean.class, Cera.CONFIG_STORAGE)
+                        .setId(id("optifine_cosmetics"))
+                        .setControl(TickBoxControl::new)
+                        .setBinding((config, value) -> config.optifineCosmetics = value, config -> config.optifineCosmetics)
+                        .build())
                 .add(OptionImpl.createBuilder(int.class, Cera.CONFIG_STORAGE)
                         .setId(id("connected_textures"))
                         .setControl(option -> new SliderControl(option, 0, ConnectedTextures.Mode.values().length - 1, 1,

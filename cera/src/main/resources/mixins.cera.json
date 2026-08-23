@@ -10,6 +10,8 @@
     "FastBlockRendererMixin",
     "MinecraftMixin",
     "ModelManagerMixin",
+    "ClientPlayerEntityMixin",
+    "PlayerRendererMixin",
     "TextureAtlasMixin",
     "WorldRendererMixin"
   ],
