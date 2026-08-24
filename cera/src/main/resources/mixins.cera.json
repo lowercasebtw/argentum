@@ -7,10 +7,15 @@
     "ClientWorldMixin",
     "ChunkRenderContextMixin",
     "ClientPlayerInteractionManagerMixin",
+    "AbstractArmorLayerMixin",
     "EntityMixin",
     "FastBlockRendererMixin",
+    "ItemModelShaperMixin",
+    "ItemRendererMixin",
     "MinecraftMixin",
+    "ModelBakeryMixin",
     "ModelManagerMixin",
+    "NamespacedIdentifiersMixin",
     "ClientPlayerEntityMixin",
     "PlayerRendererMixin",
     "TextureAtlasMixin",
@@ -19,5 +24,6 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": ["NamespacedIdentifiersMixin"]
 }

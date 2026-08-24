@@ -11,6 +11,7 @@ public class CeraConfig {
     public boolean naturalTextures = true;
     public boolean customSky = true;
     public boolean customGuis = true;
+    public boolean customItems = true;
     public boolean optifineCosmetics = true;
 
     public void validate() {

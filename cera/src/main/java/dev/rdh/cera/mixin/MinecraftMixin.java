@@ -4,6 +4,7 @@ import dev.rdh.cera.ext.CeraMinecraftExtension;
 import dev.rdh.cera.modules.CustomGuis;
 import dev.rdh.cera.modules.DynamicLights;
 import dev.rdh.cera.modules.OptifineCosmetics;
+import dev.rdh.cera.modules.cit.CustomItems;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,6 +19,8 @@ public class MinecraftMixin implements CeraMinecraftExtension {
     @Unique
     private final CustomGuis cera$customGuis = new CustomGuis();
     @Unique
+    private final CustomItems cera$customItems = new CustomItems();
+    @Unique
     private final OptifineCosmetics cera$optifineCosmetics = new OptifineCosmetics();
 
     @Override
@@ -28,6 +31,11 @@ public class MinecraftMixin implements CeraMinecraftExtension {
     @Override
     public CustomGuis cera$getCustomGuis() {
         return this.cera$customGuis;
+    }
+
+    @Override
+    public CustomItems cera$getCustomItems() {
+        return this.cera$customItems;
     }
 
     @Override

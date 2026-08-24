@@ -4,6 +4,7 @@ import net.minecraft.client.render.block.BlockModelShaper;
 import net.minecraft.client.render.texture.TextureAtlas;
 import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.client.resource.model.ModelManager;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,5 +22,6 @@ public class ModelManagerMixin {
     @Inject(method = "reload", at = @At("RETURN"))
     private void cera$compileGeometry(ResourceManager resources, CallbackInfo ci) {
         this.blocksAtlas.cera$getConnectedTextures().compileGeometry(this.modelShaper);
+        Minecraft.getInstance().cera$getCustomItems().linkModels((ModelManager) (Object) this);
     }
 }

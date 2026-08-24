@@ -150,7 +150,11 @@ public record Props(NamespacedIdentifier id, Properties properties) {
 	}
 
 	public static Identifier parseId(String value, NamespacedIdentifier current) {
-		String path = current.identifier();
+		return parseId(value, current.namespace(), current.identifier());
+	}
+
+	/** Resolves an OptiFine-style reference relative to a source {@code namespace}/{@code path} (e.g. a model location). */
+	public static Identifier parseId(String value, String namespace, String path) {
 		int lastSlash = path.lastIndexOf('/');
 		String dir = lastSlash == -1 ? "" : path.substring(0, lastSlash + 1);
 
@@ -160,11 +164,11 @@ public record Props(NamespacedIdentifier id, Properties properties) {
 		} else if (value.startsWith("~/")) {
 			int firstSlash = path.indexOf('/');
 			String root = firstSlash == -1 ? path : path.substring(0, firstSlash);
-			return new Identifier(current.namespace(), root + "/" + value.substring(2));
+			return new Identifier(namespace, root + "/" + value.substring(2));
 		} else if (value.startsWith("./")) {
-			return new Identifier(current.namespace(), dir + value.substring(2));
+			return new Identifier(namespace, dir + value.substring(2));
 		} else if (!value.contains(":") && !value.contains("/")) {
-			return new Identifier(current.namespace(), dir + value);
+			return new Identifier(namespace, dir + value);
 		}
 		return new Identifier(value);
 	}

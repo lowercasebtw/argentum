@@ -2,6 +2,7 @@ package dev.rdh.cera.modules;
 
 import dev.rdh.cera.Cera;
 import dev.rdh.cera.props.NumberList;
+import dev.rdh.cera.props.Patterns;
 import dev.rdh.cera.props.Props;
 import dev.rdh.cera.props.Result;
 
@@ -52,8 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.function.Predicate;
 
 public final class CustomGuis implements ResourceReloadListener {
     private volatile List<Rule> rules = List.of();
@@ -131,7 +131,7 @@ public final class CustomGuis implements ResourceReloadListener {
         }
     }
 
-    private record Rule(Container container, Map<Identifier, Identifier> textures, NameMatcher name, Set<String> biomes,
+    private record Rule(Container container, Map<Identifier, Identifier> textures, Predicate<String> name, Set<String> biomes,
                         boolean excludeBiomes, NumberList heights, Boolean large, Boolean trapped, Boolean christmas,
                         Boolean ender, NumberList levels, List<Profession> professions, Set<Variant> variants) {
         private static Rule parse(Props props) {
@@ -140,7 +140,7 @@ public final class CustomGuis implements ResourceReloadListener {
             Container container = parsedContainer.value();
             Map<Identifier, Identifier> textures = textures(props, container);
             if (textures.isEmpty()) throw new IllegalArgumentException("No texture");
-            NameMatcher name = NameMatcher.parse(props.get("name"));
+            Predicate<String> name = Patterns.matcher(props.get("name"));
             Biomes biomes = Biomes.parse(props.get("biomes"));
             NumberList heights = props.getNumberList("heights").value();
             NumberList levels = props.getNumberList("levels").value();
@@ -156,7 +156,7 @@ public final class CustomGuis implements ResourceReloadListener {
 
         private boolean matches(Context context) {
             if (container != context.container) return false;
-            if (name != null && !name.matches(context.name())) return false;
+            if (name != null && !name.test(context.name())) return false;
             if (!biomes.isEmpty() && biomes.contains(context.biome()) == excludeBiomes) return false;
             if (heights != null && !heights.contains(context.pos.getY())) return false;
             return switch (container) {
@@ -265,48 +265,6 @@ public final class CustomGuis implements ResourceReloadListener {
             Set<String> parsed = new HashSet<>();
             for (String name : names.split("\\s+")) parsed.add(normalize(name));
             return new Biomes(Set.copyOf(parsed), exclude);
-        }
-    }
-
-    private record NameMatcher(Pattern pattern, boolean negative) {
-        private static NameMatcher parse(String value) {
-            if (value == null) return null;
-            boolean negative = value.startsWith("!");
-            if (negative) value = value.substring(1);
-            int flags = 0;
-            if (value.startsWith("ipattern:")) {
-                value = wildcard(value.substring("ipattern:".length()));
-                flags = Pattern.CASE_INSENSITIVE;
-            } else if (value.startsWith("pattern:")) {
-                value = wildcard(value.substring("pattern:".length()));
-            } else if (value.startsWith("iregex:")) {
-                value = value.substring("iregex:".length());
-                flags = Pattern.CASE_INSENSITIVE;
-            } else if (value.startsWith("regex:")) {
-                value = value.substring("regex:".length());
-            } else {
-                value = Pattern.quote(value);
-            }
-            try {
-                return new NameMatcher(Pattern.compile(value, flags), negative);
-            } catch (PatternSyntaxException e) {
-                throw new IllegalArgumentException("Invalid name pattern", e);
-            }
-        }
-
-        private boolean matches(String value) {
-            return value != null && pattern.matcher(value).matches() != negative;
-        }
-
-        private static String wildcard(String value) {
-            StringBuilder regex = new StringBuilder();
-            for (int i = 0; i < value.length(); i++) {
-                char character = value.charAt(i);
-                if (character == '*') regex.append(".*");
-                else if (character == '?') regex.append('.');
-                else regex.append(Pattern.quote(String.valueOf(character)));
-            }
-            return regex.toString();
         }
     }
 

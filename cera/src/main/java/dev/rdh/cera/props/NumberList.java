@@ -33,6 +33,13 @@ public final class NumberList {
 		return new Parser(input).parse();
 	}
 
+	public static NumberList of(int... values) {
+		long[] ranges = new long[values.length];
+		for (int i = 0; i < values.length; i++)
+			ranges[i] = pack(values[i], values[i]);
+		return new NumberList(normalize(ranges));
+	}
+
 	private static long pack(int start, int end) {
 		return ((long) start << 32) | (end & 0xffffffffL);
 	}

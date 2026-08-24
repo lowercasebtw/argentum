@@ -1,6 +1,7 @@
 package dev.rdh.cera.modules.ctm;
 
 import dev.rdh.cera.Cera;
+import dev.rdh.cera.props.Patterns;
 import dev.rdh.cera.props.Props;
 import dev.rdh.cera.props.Result;
 import net.minecraft.block.Block;
@@ -28,7 +29,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.IntPredicate;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -196,7 +196,7 @@ final class CtmRuleLoader {
                 parseFaces(properties.get("faces")),
                 parseHeights(properties),
                 parseBiomes(properties.get("biomes")),
-                parseName(properties.get("name")),
+                Patterns.matcher(properties.get("name")),
                 value(properties.getBoolean("innerSeams", false), false),
                 connect,
                 tiles,
@@ -426,39 +426,6 @@ final class CtmRuleLoader {
         };
     }
 
-    private static Predicate<String> parseName(String value) {
-        if (value == null) return null;
-        boolean negative = value.startsWith("!");
-        if (negative) value = value.substring(1);
-        int flags = 0;
-        String expression;
-        if (value.startsWith("ipattern:")) {
-            flags = Pattern.CASE_INSENSITIVE;
-            expression = glob(value.substring("ipattern:".length()));
-        } else if (value.startsWith("pattern:")) {
-            expression = glob(value.substring("pattern:".length()));
-        } else if (value.startsWith("iregex:")) {
-            flags = Pattern.CASE_INSENSITIVE;
-            expression = value.substring("iregex:".length());
-        } else if (value.startsWith("regex:")) {
-            expression = value.substring("regex:".length());
-        } else {
-            expression = Pattern.quote(value);
-        }
-        Pattern pattern = Pattern.compile(expression, flags);
-        return name -> name != null && pattern.matcher(name).matches() != negative;
-    }
-
-    private static String glob(String value) {
-        StringBuilder regex = new StringBuilder();
-        for (int i = 0; i < value.length(); i++) {
-            char character = value.charAt(i);
-            if (character == '*') regex.append(".*");
-            else if (character == '?') regex.append('.');
-            else regex.append(Pattern.quote(String.valueOf(character)));
-        }
-        return regex.toString();
-    }
 
     private static int parseFaces(String value) {
         if (value == null) return 63;

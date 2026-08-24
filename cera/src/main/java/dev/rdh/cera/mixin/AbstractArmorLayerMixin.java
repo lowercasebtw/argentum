@@ -1,0 +1,74 @@
+package dev.rdh.cera.mixin;
+
+import dev.rdh.cera.modules.cit.CustomItems;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.layer.AbstractArmorLayer;
+import net.minecraft.client.render.model.Model;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.resource.Identifier;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+@Mixin(AbstractArmorLayer.class)
+public class AbstractArmorLayerMixin {
+    @Shadow
+    private void renderEnchantmentGlint(LivingEntity entity, Model model, float walkAnimationProgress, float walkAnimationSpeed,
+                                        float tickDelta, float bob, float yaw, float pitch, float scale) {
+    }
+
+    @Redirect(method = "renderArmor(Lnet/minecraft/entity/living/LivingEntity;FFFFFFFI)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;bindTexture(Lnet/minecraft/resource/Identifier;)V"))
+    private void cera$resolveArmorTexture(LivingEntityRenderer<?> renderer, Identifier original, LivingEntity entity, float walkAnimationProgress,
+                                                float walkAnimationSpeed, float tickDelta, float bob, float yaw, float pitch,
+                                                float scale, int equipmentSlot) {
+        ItemStack stack = entity.getArmor(equipmentSlot - 1);
+        if (!(stack.getItem() instanceof ArmorItem armor)) {
+            renderer.bindTexture(original);
+            return;
+        }
+        renderer.bindTexture(Minecraft.getInstance().cera$getCustomItems().resolveArmor(stack, armor.getTier().getKey(),
+                equipmentSlot == 2 ? 2 : 1, original.getPath().endsWith("_overlay.png"), original));
+    }
+
+    @Redirect(method = "renderArmor(Lnet/minecraft/entity/living/LivingEntity;FFFFFFFI)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/layer/AbstractArmorLayer;renderEnchantmentGlint(Lnet/minecraft/entity/living/LivingEntity;Lnet/minecraft/client/render/model/Model;FFFFFFF)V"))
+    private void cera$renderCustomGlint(AbstractArmorLayer<?> layer, LivingEntity glintEntity, Model model,
+                                        float walkAnimationProgress, float walkAnimationSpeed, float tickDelta, float bob,
+                                        float yaw, float pitch, float scale, LivingEntity entity, float methodWalkAnimationProgress,
+                                        float methodWalkAnimationSpeed, float methodTickDelta, float methodBob, float methodYaw,
+                                        float methodPitch, float methodScale, int equipmentSlot) {
+        ItemStack stack = entity.getArmor(equipmentSlot - 1);
+        var effects = Minecraft.getInstance().cera$getCustomItems().effects(stack);
+        if (effects.isEmpty()) {
+            this.renderEnchantmentGlint(glintEntity, model, walkAnimationProgress, walkAnimationSpeed, tickDelta, bob, yaw, pitch, scale);
+            return;
+        }
+        GlStateManager.enableBlend();
+        GlStateManager.depthFunc(514);
+        GlStateManager.depthMask(false);
+        GlStateManager.disableLighting();
+        GlStateManager.matrixMode(5890);
+        for (CustomItems.Effect effect : effects) {
+            Minecraft.getInstance().getTextureManager().bind(effect.texture());
+            effect.blend().apply(1.0F);
+            GlStateManager.pushMatrix();
+            GlStateManager.translatef(effect.speed() * (Minecraft.getTime() % 3000L) / 3000.0F, 0.0F, 0.0F);
+            GlStateManager.rotatef(effect.rotation(), 0.0F, 0.0F, 1.0F);
+            GlStateManager.matrixMode(5888);
+            model.render(entity, walkAnimationProgress, walkAnimationSpeed, bob, yaw, pitch, scale);
+            GlStateManager.matrixMode(5890);
+            GlStateManager.popMatrix();
+        }
+        GlStateManager.matrixMode(5888);
+        GlStateManager.enableLighting();
+        GlStateManager.depthMask(true);
+        GlStateManager.depthFunc(515);
+        GlStateManager.disableBlend();
+    }
+}
