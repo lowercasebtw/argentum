@@ -1,6 +1,7 @@
 package dev.rdh.cera.mixin;
 
 import dev.rdh.cera.ext.CeraMinecraftExtension;
+import dev.rdh.cera.modules.CustomGuis;
 import dev.rdh.cera.modules.DynamicLights;
 import dev.rdh.cera.modules.OptifineCosmetics;
 import net.minecraft.client.Minecraft;
@@ -15,11 +16,18 @@ public class MinecraftMixin implements CeraMinecraftExtension {
     @Unique
     private final DynamicLights.Rules cera$dynamicLightRules = new DynamicLights.Rules();
     @Unique
+    private final CustomGuis cera$customGuis = new CustomGuis();
+    @Unique
     private final OptifineCosmetics cera$optifineCosmetics = new OptifineCosmetics();
 
     @Override
     public DynamicLights.Rules cera$getDynamicLightRules() {
         return this.cera$dynamicLightRules;
+    }
+
+    @Override
+    public CustomGuis cera$getCustomGuis() {
+        return this.cera$customGuis;
     }
 
     @Override

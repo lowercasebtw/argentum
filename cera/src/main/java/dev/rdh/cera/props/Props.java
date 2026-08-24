@@ -66,7 +66,11 @@ public record Props(NamespacedIdentifier id, Properties properties) {
 		}
 	}
 
-	public Result<Boolean> getBoolean(String key, boolean defaultValue) {
+	public Result<Boolean> getBoolean(String key) {
+		return getBoolean(key, null);
+	}
+
+	public Result<Boolean> getBoolean(String key, Boolean defaultValue) {
 		String value = properties.getProperty(key);
 		if (value == null) {
 			return Result.success(defaultValue);

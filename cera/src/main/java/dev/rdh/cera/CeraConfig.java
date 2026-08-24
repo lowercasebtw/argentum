@@ -10,6 +10,7 @@ public class CeraConfig {
     public DynamicLights.Mode dynamicLights = DynamicLights.Mode.FANCY;
     public boolean naturalTextures = true;
     public boolean customSky = true;
+    public boolean customGuis = true;
     public boolean optifineCosmetics = true;
 
     public void validate() {
