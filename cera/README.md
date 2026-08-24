@@ -4,6 +4,7 @@ Cera is a companion mod for Argentum that reimplements MCPatcher/OptiFine resour
 ## Features
 - Connected textures
 - Dynamic lights
+- Custom item textures
 - Natural textures
 - Better grass & snow
 - Custom skyboxes
@@ -13,7 +14,6 @@ Cera is a companion mod for Argentum that reimplements MCPatcher/OptiFine resour
 
 Along with that, some other features are planned:
 
-- Custom item textures
 - Custom entity models/textures
 - Non-block animated textures
 - Custom colors
