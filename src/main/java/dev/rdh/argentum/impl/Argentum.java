@@ -18,7 +18,7 @@ import java.nio.file.Path;
 public class Argentum implements ClientModInitializer {
     public static final String ID = "argentum";
     public static String VERSION;
-    public static ArgentumConfig CONFIG = new ArgentumConfig();
+    public static ArgentumConfig CONFIG;
     public static JsonOptionStorage<ArgentumConfig> CONFIG_STORAGE;
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ID);
@@ -30,6 +30,8 @@ public class Argentum implements ClientModInitializer {
         VERSION = loader.getModContainer(ID).orElseThrow().getMetadata().getVersion().toString();
         CONFIG_STORAGE = JsonOptionStorage.load(getConfigPath(loader.getConfigDir()), ArgentumConfig.class, ArgentumConfig::new, ArgentumConfig::validate);
         CONFIG = CONFIG_STORAGE.getData();
+
+        LOGGER.info("Argentum v{}", VERSION);
     }
 
     private Path getConfigPath(Path c) {

@@ -19,7 +19,7 @@ public class DebugStrings {
         stringsToRender.add(Pair.of(getNativeMemoryString(), Formatting.RESET));
         stringsToRender.add(Pair.of("", Formatting.RESET));
 
-        stringsToRender.add(Pair.of("%s Renderer (%s)".formatted("Argentum", Argentum.VERSION), Formatting.GREEN));
+        stringsToRender.add(Pair.of("Argentum Renderer (%s)".formatted(Argentum.VERSION), Formatting.GREEN));
         stringsToRender.add(Pair.of("", Formatting.RESET));
 
         var renderer = ArgentumWorldRenderer.instanceNullable();

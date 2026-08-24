@@ -2,7 +2,7 @@ plugins {
     id("mc")
 }
 
-version = "2.4.0-dev.6"
+version = "1.0.0"
 
 java.toolchain {
     languageVersion = JavaLanguageVersion.of(25)
@@ -66,7 +66,7 @@ dependencies {
     include(implementation("org.joml:joml:1.10.5")!!)
     implementation("it.unimi.dsi:fastutil:8.5.15")
     implementation("org.apache.logging.log4j:log4j-api:2.0-beta9")
-    include(api("org.embeddedt.celeritas:celeritas-common:${version}")!!)
+    include(api("org.embeddedt.celeritas:celeritas-common:${property("celeritas_version")}")!!)
 }
 
 tasks.named("runFontTestClient") {
