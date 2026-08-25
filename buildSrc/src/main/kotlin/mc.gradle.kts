@@ -18,7 +18,7 @@ repositories {
         }
     }
     maven("https://maven.taumc.org/releases")
-    maven("https://maven.axolotlclient.com/releases")
+    maven("https://maven.cloverclient.com/releases")
     exclusiveContent {
         forRepository { maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1") }
         filter {
@@ -91,12 +91,30 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${v("fabric")}")
     ploceus.dependOsl(v("osl"))
 
-    modImplementation("io.github.moehreag:legacy-lwjgl3:${v("legacy_lwjgl3")}")
+    modImplementation("pl.tomgirl:lenis:${v("lenis")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${v("devauth")}")
 
     if (project != rootProject) {
         implementation(project(path = ":", configuration = "namedElements"))
+    }
+}
+
+abstract class LumenFix : ComponentMetadataRule {
+    override fun execute(context: ComponentMetadataContext) {
+        val deps = mutableListOf<DirectDependencyMetadata>()
+
+        context.details.withVariant("runtimeElements") {
+            withDependencies { deps.addAll(this) }
+        }
+
+        context.details.withVariant("apiElements") {
+            withDependencies {
+                deps.filterNot {
+                    it.artifactSelectors.any { it.classifier?.contains("natives") == true }
+                }.forEach { add(it) }
+            }
+        }
     }
 }
 

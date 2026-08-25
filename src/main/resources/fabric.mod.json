@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "minecraft": "1.8.9",
-    "legacy-lwjgl3": ">=1.4.0"
+    "lenis": "*"
   },
   "accessWidener": "argentum.classtweaker",
   "mixins": ["mixins.argentum.json"]
