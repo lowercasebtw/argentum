@@ -51,7 +51,7 @@ jobs:
             fi
 
       -   name: do the build
-          run: ./gradlew assemble --stacktrace --no-daemon
+          run: ./gradlew assemble --stacktrace --no-daemon --debug
 
       -   name: upload artifacts
           uses: actions/upload-artifact@v7
