@@ -100,24 +100,6 @@ dependencies {
     }
 }
 
-abstract class LumenFix : ComponentMetadataRule {
-    override fun execute(context: ComponentMetadataContext) {
-        val deps = mutableListOf<DirectDependencyMetadata>()
-
-        context.details.withVariant("runtimeElements") {
-            withDependencies { deps.addAll(this) }
-        }
-
-        context.details.withVariant("apiElements") {
-            withDependencies {
-                deps.filterNot {
-                    it.artifactSelectors.any { it.classifier?.contains("natives") == true }
-                }.forEach { add(it) }
-            }
-        }
-    }
-}
-
 tasks.processResources {
     val v = project.version
     inputs.property("version", v)
