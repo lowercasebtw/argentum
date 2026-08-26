@@ -31,27 +31,10 @@ jobs:
               gradle-local-cache-${{ runner.os }}-
             path: |
               ./.gradle/loom-cache/
-              ./.gradle/configuration-cache.enc
               ./buildSrc/build/
 
-      -   name: unpack configuration cache
-          run: |
-            if [ -f ".gradle/configuration-cache.enc" ]; then
-              openssl enc \
-                -d \
-                -aes-256-cbc \
-                -pbkdf2 \
-                -salt \
-                -pass pass:"GRADLE_ENCRYPTION_KEY" \
-                -in .gradle/configuration-cache.enc \
-                -out /tmp/configuration-cache.tar
-
-              mkdir -p .gradle/configuration-cache
-              tar -xf /tmp/configuration-cache.tar -C .gradle/configuration-cache
-            fi
-
       -   name: do the build
-          run: ./gradlew assemble --stacktrace --no-daemon --debug
+          run: ./gradlew assemble --stacktrace --no-daemon
 
       -   name: upload artifacts
           uses: actions/upload-artifact@v7
@@ -59,17 +42,3 @@ jobs:
             name: argentum-artifacts-v${{ github.run_number }}
             path: |
               build/libs/*
-
-      -   name: encrypt configuration cache
-          run: |
-            if [ -d ".gradle/configuration-cache" ]; then
-              tar -cf /tmp/configuration-cache.tar -C .gradle/configuration-cache .
-        
-              openssl enc \
-                -aes-256-cbc \
-                -pbkdf2 \
-                -salt \
-                -pass pass:"GRADLE_ENCRYPTION_KEY" \
-                -in /tmp/configuration-cache.tar \
-                -out .gradle/configuration-cache.enc
-            fi
