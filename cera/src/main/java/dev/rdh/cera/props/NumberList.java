@@ -26,6 +26,34 @@ public final class NumberList {
 		return lo != 0 && value <= (int) ranges[lo - 1];
 	}
 
+	public int rangeCount() {
+		return ranges.length;
+	}
+
+	public long range(int index) {
+		return ranges[index];
+	}
+
+	public int size() {
+		int s = 0;
+		for(long range : ranges) {
+			s += length(range);
+		}
+		return s;
+	}
+
+	public static int start(long range) {
+		return (int) (range >> 32);
+	}
+
+	public static int end(long range) {
+		return (int) range;
+	}
+
+	public static int length(long range) {
+		return end(range) - start(range) + 1;
+	}
+
 	public static Result<NumberList> parse(String input) {
 		if (input == null)
 			return Result.failure("Input is null");
