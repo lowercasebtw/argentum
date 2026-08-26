@@ -7,16 +7,17 @@ import org.embeddedt.embeddium.impl.render.chunk.compile.ChunkBuildContext;
 import org.embeddedt.embeddium.impl.render.chunk.compile.ChunkBuildOutput;
 import org.embeddedt.embeddium.impl.render.chunk.compile.tasks.ChunkBuilderTask;
 import org.embeddedt.embeddium.impl.render.chunk.data.BuiltSectionMeshParts;
+import org.embeddedt.embeddium.impl.render.chunk.occlusion.SectionVisibilityBuilder;
 import org.embeddedt.embeddium.impl.render.chunk.terrain.TerrainRenderPass;
 import org.embeddedt.embeddium.impl.util.task.CancellationToken;
 import org.joml.Vector3d;
 import dev.rdh.argentum.impl.debug.RenderMetrics;
 import dev.rdh.argentum.impl.render.terrain.compile.PrimitiveBuiltRenderSectionData;
 import dev.rdh.argentum.impl.render.terrain.compile.PrimitiveChunkBuildContext;
-import dev.rdh.argentum.impl.render.terrain.occlusion.ChunkOcclusionDataBuilder;
 import dev.rdh.argentum.impl.world.cloned.ChunkRenderContext;
 
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.crash.CrashException;
@@ -64,10 +65,10 @@ public class ChunkBuilderMeshingTask extends ChunkBuilderTask<ChunkBuildOutput> 
         // Initialise with minX/minY/minZ so initial getBlockState crash context is correct
 
         var blockPos = new BlockPos.Mutable(minX, minY, minZ);
-        var renderBlocks = net.minecraft.client.Minecraft.getInstance().getBlockRenderDispatcher();
+        var renderBlocks = Minecraft.getInstance().getBlockRenderDispatcher();
 
         buildContext.beginSection(this.renderContext, minX, minY, minZ);
-        ChunkOcclusionDataBuilder occluder = buildContext.getOcclusionBuilder();
+        SectionVisibilityBuilder occluder = new SectionVisibilityBuilder();
 
         try {
             for (int y = minY; y < maxY; y++) {
@@ -105,7 +106,7 @@ public class ChunkBuilderMeshingTask extends ChunkBuilderTask<ChunkBuildOutput> 
                         }
 
 						if (block.isOpaque()) {
-                            occluder.markClosed(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                            occluder.markOpaque(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                         }
                     }
                 }

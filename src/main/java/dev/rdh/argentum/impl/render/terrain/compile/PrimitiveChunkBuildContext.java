@@ -21,7 +21,6 @@ import java.nio.IntBuffer;
 import dev.rdh.argentum.impl.Argentum;
 import dev.rdh.argentum.impl.render.terrain.compile.light.PrimitiveLightDataCache;
 import dev.rdh.argentum.impl.render.terrain.compile.pipeline.FastBlockRenderer;
-import dev.rdh.argentum.impl.render.terrain.occlusion.ChunkOcclusionDataBuilder;
 import dev.rdh.argentum.impl.world.biome.BiomeColorCache;
 import dev.rdh.argentum.impl.world.cloned.ChunkRenderContext;
 
@@ -35,7 +34,6 @@ public class PrimitiveChunkBuildContext extends ChunkBuildContext {
     private final PrimitiveLightDataCache lightCache = new PrimitiveLightDataCache();
     private final short[] renderLightCache = new short[20 * 20 * 20];
     private final BiomeColorCache biomeColorCache = new BiomeColorCache(Argentum.CONFIG.biomeBlendRadius);
-    private final ChunkOcclusionDataBuilder occlusionBuilder = new ChunkOcclusionDataBuilder();
     private final FastBlockRenderer blockRenderer = new FastBlockRenderer(this, this.lightCache);
     private int originX;
     private int originY;
@@ -53,13 +51,8 @@ public class PrimitiveChunkBuildContext extends ChunkBuildContext {
         this.originZ = z;
         this.biomeColorCache.update(world);
         world.resetCaches(this.renderLightCache, this.biomeColorCache);
-        this.occlusionBuilder.reset();
         this.lightCache.reset(world, x, y, z);
         this.blockRenderer.beginSection();
-    }
-
-    public ChunkOcclusionDataBuilder getOcclusionBuilder() {
-        return this.occlusionBuilder;
     }
 
     public FastBlockRenderer getBlockRenderer() {
