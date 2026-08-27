@@ -5,7 +5,10 @@
   "version": "${version}",
   "environment": "client",
   "description": "MCPatcher/OptiFine resource pack extensions",
-  "icon": "assets/cera/textures/gui/icon.png",
+  "icon": {
+    "512": "assets/cera/textures/gui/512.png",
+    "64": "assets/cera/textures/gui/64.png"
+  },
   "authors": ["rdh"],
   "entrypoints": {
     "client": ["dev.rdh.cera.Cera"]
