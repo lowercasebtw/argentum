@@ -94,6 +94,7 @@ dependencies {
     modImplementation("pl.tomgirl:lenis:${v("lenis")}")
 
     modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${v("devauth")}")
+    modImplementation("com.terraformersmc:modmenu:${v("modmenu")}+mc${v("minecraft")}")
 
     if (project != rootProject) {
         implementation(project(path = ":", configuration = "namedElements"))
