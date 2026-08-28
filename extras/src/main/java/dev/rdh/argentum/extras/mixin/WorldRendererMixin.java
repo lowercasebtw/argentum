@@ -3,13 +3,17 @@ package dev.rdh.argentum.extras.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import dev.rdh.argentum.extras.ArgentumExtras;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.vertex.VertexBuffer;
 import net.minecraft.client.render.world.WorldRenderer;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.world.HitResult;
 
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -17,6 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+
     @ModifyExpressionValue(method = "renderSky",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/dimension/Dimension;getSunriseColor(FF)[F"))
     private float[] argentumExtras$hideSunrise(float[] color) {
@@ -89,6 +97,11 @@ public class WorldRendererMixin {
 
     @ModifyArg(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glLineWidth(F)V"))
     private float argentumExtras$blockOutlineWidth(float original) {
-        return ArgentumExtras.CONFIG.blockOutlineWidth;
+        float f = ArgentumExtras.CONFIG.blockOutlineWidth;
+        if (ArgentumExtras.CONFIG.scaledBlockOutlineWidth) {
+            return Math.max(f, this.minecraft.width / 1920.0f * f);
+        } else {
+            return f;
+        }
     }
 }

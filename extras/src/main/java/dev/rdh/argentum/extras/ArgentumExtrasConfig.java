@@ -45,6 +45,7 @@ public class ArgentumExtrasConfig {
     public boolean fxaa = false;
     public boolean smoothBlockOutlines = false;
     public float blockOutlineWidth = 2.0f;
+    public boolean scaledBlockOutlineWidth = false;
 
     public void validate() {
         this.debugHudRefreshIntervalMs = Math.max(0, this.debugHudRefreshIntervalMs);
