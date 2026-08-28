@@ -112,6 +112,10 @@ final class ArgentumExtrasOptionPage {
         OptionGroup quality = OptionGroup.createBuilder()
                 .setId(id("quality"))
                 .add(toggle("fxaa", (c, v) -> c.fxaa = v, c -> c.fxaa))
+                .add(toggle("smooth_block_outlines", (c, v) -> c.smoothBlockOutlines = v, c -> c.smoothBlockOutlines))
+                .add(slider("block_outline_width", 1, 5, 1,
+                        (c, v) -> c.blockOutlineWidth = v, c -> (int) c.blockOutlineWidth,
+                        value -> text(value == 1 ? "value.pixel" : "value.pixels", value)).build())
                 .build();
 
         OptionGroup misc = OptionGroup.createBuilder()

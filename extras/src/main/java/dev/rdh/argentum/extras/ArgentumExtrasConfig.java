@@ -43,6 +43,8 @@ public class ArgentumExtrasConfig {
     public LeafQuality leafQuality = LeafQuality.FANCY;
     public boolean disableTextShadows = false;
     public boolean fxaa = false;
+    public boolean smoothBlockOutlines = false;
+    public float blockOutlineWidth = 2.0f;
 
     public void validate() {
         this.debugHudRefreshIntervalMs = Math.max(0, this.debugHudRefreshIntervalMs);
