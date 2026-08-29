@@ -161,6 +161,8 @@ public class ArgentumWorldRenderer extends SimpleWorldRenderer<World, PrimitiveR
             return true;
         }
 
+        if (entity.shouldShowNameTag()) return true;
+
         var box = entity.getShape();
         if (!Double.isFinite(box.minX) || !Double.isFinite(box.minY) || !Double.isFinite(box.minZ)
                 || !Double.isFinite(box.maxX) || !Double.isFinite(box.maxY) || !Double.isFinite(box.maxZ)) {
