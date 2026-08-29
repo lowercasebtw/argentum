@@ -45,11 +45,6 @@ public class WorldRendererMixin {
         return ArgentumExtras.CONFIG.sky;
     }
 
-    @WrapWithCondition(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;callList(I)V", ordinal = 2))
-    private boolean argentumExtras$drawDarkSky(int list) {
-        return ArgentumExtras.CONFIG.sky;
-    }
-
     @ModifyArg(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", ordinal = 0), index = 3)
     private float argentumExtras$celestialAlpha(float alpha) {
         return ArgentumExtras.CONFIG.sunAndMoon ? alpha : 0.0F;
@@ -94,6 +89,6 @@ public class WorldRendererMixin {
     // but it seems to work
     @WrapWithCondition(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;callList(I)V", ordinal = 3))
     private boolean argentumExtras$drawLowerSky(int list) {
-        return ArgentumExtras.CONFIG.lowerSky;
+        return ArgentumExtras.CONFIG.lowerSky && ArgentumExtras.CONFIG.sky;
     }
 }
