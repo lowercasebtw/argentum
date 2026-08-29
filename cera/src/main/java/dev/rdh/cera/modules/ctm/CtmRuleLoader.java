@@ -376,7 +376,7 @@ final class CtmRuleLoader {
         if (path.startsWith("/")) path = "~/" + path.substring(1);
         if (!relative && separator < 0 && !path.contains("/")) path = "blocks/" + path;
 
-        Identifier id = Props.parseId(path, properties.id());
+        Identifier id = properties.parseId(path);
         path = id.getPath();
         if (path.startsWith("textures/")) path = path.substring("textures/".length());
         if (separator >= 0 && !path.contains("/")) path = "blocks/" + path;
@@ -389,9 +389,10 @@ final class CtmRuleLoader {
         for (String token : value.trim().split("[ ,]+")) {
             Matcher matcher = RANGE.matcher(token);
             if (!matcher.matches()) continue;
-            int min = Integer.parseInt(matcher.group(1));
-            int max = matcher.group(2) == null ? min : Integer.parseInt(matcher.group(2));
-            for (int i = Math.max(0, Math.min(min, max)); i <= Math.min(31, Math.max(min, max)); i++) {
+            int a = Integer.parseInt(matcher.group(1));
+            int b = matcher.group(2) == null ? a : Integer.parseInt(matcher.group(2));
+            int min = Math.min(a, b), max = Math.max(a, b);
+            for (int i = Math.max(0, min); i <= Math.min(31, max); i++) {
                 mask |= 1 << i;
             }
         }

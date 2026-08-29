@@ -28,9 +28,10 @@ public class Cera implements ClientModInitializer {
         OptionGUIConstructionEvent.BUS.addListener(event -> event.addPage(CeraOptionPage.create()));
         ClientResourceLoaderEvents.INIT_RESOURCE_MANAGER.register(resources -> {
             Minecraft minecraft = Minecraft.getInstance();
+            resources.addReloader(minecraft.getTextureManager().cera$getAnimatedTextures());
             resources.addReloader(minecraft.getBlocksAtlas().cera$getNaturalTextures());
             resources.addReloader(minecraft.cera$getDynamicLightRules());
-            resources.addReloader(minecraft.cera$getCustomGuis());
+            resources.addReloader(minecraft.getTextureManager().cera$getCustomGuis());
             resources.addReloader(minecraft.worldRenderer.cera$getCustomSky());
         });
     }

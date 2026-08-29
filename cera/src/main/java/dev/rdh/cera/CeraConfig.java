@@ -9,6 +9,7 @@ public class CeraConfig {
     public ConnectedTextures.Mode connectedTextures = ConnectedTextures.Mode.FANCY;
     public DynamicLights.Mode dynamicLights = DynamicLights.Mode.FANCY;
     public boolean naturalTextures = true;
+    public boolean animatedTextures = true;
     public boolean customSky = true;
     public boolean customGuis = true;
     public boolean customItems = true;

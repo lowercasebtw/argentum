@@ -1,16 +1,43 @@
 package dev.rdh.cera.mixin;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import dev.rdh.cera.ext.CeraTextureManagerExtension;
+import dev.rdh.cera.modules.AnimatedTextures;
+import dev.rdh.cera.modules.CustomGuis;
 
 @Mixin(TextureManager.class)
-public class TextureManagerMixin {
+public class TextureManagerMixin implements CeraTextureManagerExtension {
+    @Unique
+    private final AnimatedTextures cera$animatedTextures = new AnimatedTextures();
+
+    @Unique
+    private final CustomGuis cera$customGuis = new CustomGuis();
+
+    @Override
+    public AnimatedTextures cera$getAnimatedTextures() {
+        return this.cera$animatedTextures;
+    }
+
+    @Override
+    public CustomGuis cera$getCustomGuis() {
+        return this.cera$customGuis;
+    }
+
     @ModifyVariable(method = "bind", at = @At("HEAD"), argsOnly = true)
     private Identifier cera$resolveCustomGui(Identifier texture) {
-		return Minecraft.getInstance().cera$getCustomGuis().resolve(texture);
+		return cera$customGuis.resolve(texture);
+    }
+
+    @Inject(method = "bind", at = @At("HEAD"))
+    private void cera$applyAnimatedTexture(Identifier texture, CallbackInfo ci) {
+        cera$animatedTextures.apply(texture);
     }
 }

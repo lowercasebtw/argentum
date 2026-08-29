@@ -24,3 +24,5 @@ cera.options.dynamic_lights.tooltip=Makes glowing entities and held or dropped l
 cera.options.value.dynamic_lights.off=Off
 cera.options.value.dynamic_lights.fast=Fast
 cera.options.value.dynamic_lights.fancy=Fancy
+cera.options.animated_textures.name=Animated Textures
+cera.options.animated_textures.tooltip=Animates regions of GUI, entity and other non-block textures from resource pack rules.

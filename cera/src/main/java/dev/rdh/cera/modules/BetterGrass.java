@@ -148,7 +148,7 @@ public final class BetterGrass {
 
     private static TextureAtlasSprite register(Props properties, String key, String fallback,
             ResourceManager resources, TextureAtlas atlas, Map<String, TextureAtlasSprite> sourcedSprites) {
-        Identifier id = Props.parseId(properties.get(key, fallback), properties.id());
+        Identifier id = properties.parseId(properties.get(key, fallback));
         Identifier resource = new Identifier(id.getNamespace(), "textures/" + id.getPath() + ".png");
         if (!resources.hasResource(resource)) {
             Cera.LOGGER.warn("[BetterGrass] texture not found: {}", resource);

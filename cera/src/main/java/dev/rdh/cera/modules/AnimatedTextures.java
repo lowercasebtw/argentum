@@ -1,0 +1,323 @@
+package dev.rdh.cera.modules;
+
+import dev.rdh.cera.Cera;
+import dev.rdh.cera.props.Props;
+import dev.rdh.cera.props.Result;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.texture.AbstractTexture;
+import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.render.texture.SimpleTexture;
+import net.minecraft.client.render.texture.Texture;
+import net.minecraft.client.render.texture.TextureManager;
+import net.minecraft.client.render.texture.TickableTexture;
+import net.minecraft.resource.Identifier;
+import net.ornithemc.osl.resource.loader.api.resource.Resource;
+import net.ornithemc.osl.resource.loader.api.resource.manager.ResourceManager;
+import net.ornithemc.osl.resource.loader.api.resource.reload.ResourceReloadListener;
+
+import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public final class AnimatedTextures implements ResourceReloadListener {
+    private volatile Map<Identifier, Target> targets = Map.of();
+
+    @Override
+    public void resourcesReloaded(ResourceManager resources) {
+        Map<Identifier, List<Animation>> grouped = new Object2ObjectOpenHashMap<>();
+        if (Cera.CONFIG.animatedTextures) {
+            collect(resources, "optifine/anim/", grouped);
+            collect(resources, "mcpatcher/anim/", grouped);
+        }
+
+        Map<Identifier, Target> loaded = new Object2ObjectOpenHashMap<>();
+        grouped.forEach((id, animations) -> {
+            Target target = target(resources, id, animations);
+            if (target != null) loaded.put(id, target);
+        });
+        this.targets = Map.copyOf(loaded);
+
+        int count = loaded.values().stream().mapToInt(target -> target.animations().length).sum();
+        Cera.LOGGER.info("[AnimatedTextures] Loaded {} animations across {} textures", count, loaded.size());
+    }
+
+    public void apply(Identifier id) {
+        if (this.targets.isEmpty() || !Cera.CONFIG.animatedTextures) return;
+
+        TextureManager textures = Minecraft.getInstance().getTextureManager();
+        Texture current = textures.get(id);
+        Target target = this.targets.get(id);
+
+        if (target == null) {
+            if (current instanceof AnimatedTexture animated) restore(textures, id, animated);
+            return;
+        }
+        if (current instanceof AnimatedTexture animated) {
+            if (animated.matches(target.width(), target.height())) {
+                animated.reset(target.pixels(), target.animations());
+            } else {
+                restore(textures, id, animated);
+            }
+        } else if (current instanceof SimpleTexture) {
+            ((AbstractTexture) current).clearGlId();
+            textures.register(id, new AnimatedTexture(target.pixels(), target.width(), target.height(), target.animations()));
+        }
+    }
+
+    private static void restore(TextureManager textures, Identifier id, AnimatedTexture animated) {
+        animated.disable();
+        animated.clearGlId();
+        textures.register(id, new SimpleTexture(id));
+    }
+
+    private static void collect(ResourceManager resources, String directory, Map<Identifier, List<Animation>> grouped) {
+        resources.findResources("minecraft", directory, id -> id.identifier().endsWith(".properties"))
+                .forEach((_, resource) -> load(resource, resources, grouped));
+    }
+
+    private static void load(Resource resource, ResourceManager resources, Map<Identifier, List<Animation>> grouped) {
+        try {
+            Props props = new Props(resource);
+            Result<Animation> result = Animation.parse(props, resources);
+            if (!result.isSuccess()) {
+                Cera.LOGGER.warn("[AnimatedTextures] Skipping {}: {}", props.id(), result.error());
+                return;
+            }
+            Animation animation = result.value();
+            grouped.computeIfAbsent(animation.target(), _ -> new ArrayList<>()).add(animation);
+        } catch (IOException e) {
+            Cera.LOGGER.warn("[AnimatedTextures] Failed to read {}", resource.location(), e);
+        }
+    }
+
+    private static Target target(ResourceManager resources, Identifier id, List<Animation> animations) {
+        try {
+            BufferedImage image = readImage(resources, id);
+            int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+            return new Target(pixels, image.getWidth(), image.getHeight(), animations.toArray(Animation[]::new));
+        } catch (IOException e) {
+            Cera.LOGGER.warn("[AnimatedTextures] Target texture not found: {}", id);
+            return null;
+        }
+    }
+
+    private static BufferedImage readImage(ResourceManager resources, Identifier id) throws IOException {
+        Resource resource = resources.getResource(id).orElse(null);
+        if (resource == null) throw new FileNotFoundException(id.toString());
+        try (resource; InputStream in = resource.open()) {
+            BufferedImage image = ImageIO.read(in);
+            if (image == null) throw new IOException("Not an image");
+            return image;
+        }
+    }
+
+    private static BufferedImage scale(BufferedImage image, int targetWidth) {
+        int targetHeight = Math.max((int) ((double) image.getHeight() * targetWidth / image.getWidth()), 1);
+        BufferedImage scaled = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = scaled.createGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.drawImage(image, 0, 0, targetWidth, targetHeight, null);
+        graphics.dispose();
+        return scaled;
+    }
+
+    private record Target(int[] pixels, int width, int height, Animation[] animations) {
+    }
+
+    private static final class Animation {
+        private final Identifier target;
+        private final int x;
+        private final int y;
+        private final int width;
+        private final int height;
+        private final int[] tiles;
+        private final int[] durations;
+        private final boolean interpolate;
+        private final int skip;
+        private final int[] strip;
+        private int phase;
+        private int counter;
+
+        private static Result<Animation> parse(Props props, ResourceManager resources) {
+            String from = props.get("from");
+            String to = props.get("to");
+            if (from == null || to == null) return Result.failure("source or target texture not specified");
+
+            int x = props.getInt("x", -1).orElse(-1);
+            int y = props.getInt("y", -1).orElse(-1);
+            int width = props.getInt("w", -1).orElse(-1);
+            int height = props.getInt("h", -1).orElse(-1);
+            if (x < 0 || y < 0 || width <= 0 || height <= 0) return Result.failure("invalid coordinates");
+
+            Identifier target = props.parseId(to.trim());
+            if (target.getPath().startsWith("textures/atlas/")) {
+                return Result.failure("block/item textures must use vanilla mcmeta animations");
+            }
+
+            BufferedImage strip;
+            try {
+                strip = readImage(resources, props.parseId(from.trim()));
+            } catch (IOException e) {
+                return Result.failure("source texture not found");
+            }
+            if (strip.getWidth() != width) strip = scale(strip, width);
+            int frames = strip.getHeight() / height;
+            if (frames <= 0 || strip.getHeight() % height != 0) return Result.failure("source frame size does not divide the strip evenly");
+
+            BufferedImage image;
+            try {
+                image = readImage(resources, target);
+            } catch (IOException e) {
+                return Result.failure("target texture not found");
+            }
+            if (x + width > image.getWidth() || y + height > image.getHeight()) {
+                return Result.failure("animation coordinates are outside the target texture");
+            }
+
+            int defaultDuration = Math.max(props.getInt("duration", 1).orElse(1), 1);
+            int count;
+            if (props.contains("tile.0")) {
+                count = 0;
+                while (props.contains("tile." + count)) count++;
+            } else {
+                count = frames;
+            }
+
+            int[] tiles = new int[count];
+            int[] durations = new int[count];
+            for (int i = 0; i < count; i++) {
+                tiles[i] = props.getInt("tile." + i, i).orElse(i);
+                if (tiles[i] < 0 || tiles[i] >= frames) return Result.failure("tile." + i + " is outside the source texture");
+                durations[i] = Math.max(props.getInt("duration." + i, defaultDuration).orElse(defaultDuration), 1);
+            }
+
+            boolean interpolate = props.getBoolean("interpolate", false).orElse(false);
+            int skip = Math.max(props.getInt("skip", 0).orElse(0), 0);
+            int[] stripPixels = strip.getRGB(0, 0, strip.getWidth(), strip.getHeight(), null, 0, strip.getWidth());
+            return Result.success(new Animation(target, x, y, width, height, tiles, durations, interpolate, skip, stripPixels));
+        }
+
+        Animation(Identifier target, int x, int y, int width, int height,
+                int[] tiles, int[] durations, boolean interpolate, int skip, int[] strip) {
+            this.target = target;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.tiles = tiles;
+            this.durations = durations;
+            this.interpolate = interpolate;
+            this.skip = skip;
+            this.strip = strip;
+        }
+
+        Identifier target() {
+            return this.target;
+        }
+
+        boolean tick() {
+            this.counter++;
+            if (this.counter < this.durations[this.phase]) {
+                return this.interpolate && (this.skip <= 1 || this.counter % this.skip == 0);
+            }
+            this.counter = 0;
+            this.phase = (this.phase + 1) % this.durations.length;
+            return true;
+        }
+
+        void composite(int[] pixels, int textureWidth) {
+            int tile = this.tiles[this.phase];
+            if (!this.interpolate || this.counter <= 0) {
+                this.write(tile, tile, 0.0, pixels, textureWidth);
+            } else {
+                int next = this.tiles[(this.phase + 1) % this.tiles.length];
+                this.write(tile, next, (double) this.counter / this.durations[this.phase], pixels, textureWidth);
+            }
+        }
+
+        private void write(int tile, int next, double k, int[] pixels, int textureWidth) {
+            int base = this.y * textureWidth + this.x;
+            for (int v = 0; v < this.height; v++) {
+                int source = (tile * this.height + v) * this.width;
+                int target = base + v * textureWidth;
+                if (k <= 0.0) {
+                    System.arraycopy(this.strip, source, pixels, target, this.width);
+                } else {
+                    int blended = (next * this.height + v) * this.width;
+                    for (int u = 0; u < this.width; u++) {
+                        pixels[target + u] = mix(this.strip[source + u], this.strip[blended + u], k);
+                    }
+                }
+            }
+        }
+
+        private static int mix(int first, int second, double k) {
+            double inverse = 1.0 - k;
+            int alpha = (int) ((first >>> 24) * inverse + (second >>> 24) * k);
+            int red = (int) ((first >>> 16 & 255) * inverse + (second >>> 16 & 255) * k);
+            int green = (int) ((first >>> 8 & 255) * inverse + (second >>> 8 & 255) * k);
+            int blue = (int) ((first & 255) * inverse + (second & 255) * k);
+            return alpha << 24 | red << 16 | green << 8 | blue;
+        }
+    }
+
+    private static final class AnimatedTexture extends DynamicTexture implements TickableTexture {
+        private static final Animation[] NONE = new Animation[0];
+
+        private final int width;
+        private final int height;
+        private int[] base;
+        private Animation[] animations;
+
+        AnimatedTexture(int[] base, int width, int height, Animation[] animations) {
+            super(width, height);
+            this.width = width;
+            this.height = height;
+            this.base = base;
+            this.animations = animations;
+            this.repaint();
+        }
+
+        boolean matches(int width, int height) {
+            return this.width == width && this.height == height;
+        }
+
+        void reset(int[] base, Animation[] animations) {
+            this.base = base;
+            this.animations = animations;
+            this.repaint();
+        }
+
+        void disable() {
+            this.animations = NONE;
+        }
+
+        @Override
+        public void tick() {
+            boolean changed = false;
+            for (Animation animation : this.animations) {
+                if (animation.tick()) {
+                    animation.composite(this.getPixels(), this.width);
+                    changed = true;
+                }
+            }
+            if (changed) this.upload();
+        }
+
+        private void repaint() {
+            System.arraycopy(this.base, 0, this.getPixels(), 0, this.base.length);
+            for (Animation animation : this.animations) {
+                animation.composite(this.getPixels(), this.width);
+            }
+            this.upload();
+        }
+    }
+}

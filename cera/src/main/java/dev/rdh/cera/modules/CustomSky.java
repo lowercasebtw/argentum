@@ -145,7 +145,7 @@ public final class CustomSky implements ResourceReloadListener {
                 Cera.LOGGER.warn("[CustomSky] Failed to load {}", resource.location(), e);
             }
         }
-        result.replaceAll((world, sky) -> List.copyOf(sky));
+        result.replaceAll((_, sky) -> List.copyOf(sky));
         return result;
     }
 
@@ -260,7 +260,7 @@ public final class CustomSky implements ResourceReloadListener {
 
     private record Asset(Identifier source, BlendMethod blend) {
         private static Asset parse(Props props, Identifier defaultSource) {
-            Identifier source = Props.parseId(props.get("source", defaultSource.toString()), props.id());
+            Identifier source = props.parseId(props.get("source", defaultSource.toString()));
             return new Asset(source, props.getBlendMethod("blend", BlendMethod.ADD).value());
         }
     }
@@ -276,7 +276,7 @@ public final class CustomSky implements ResourceReloadListener {
     ) {
 
         private static Layer parse(Props props, Identifier defaultSource) {
-            Identifier source = Props.parseId(props.get("source", defaultSource.toString()), props.id());
+            Identifier source = props.parseId(props.get("source", defaultSource.toString()));
             String start = props.get("startFadeIn");
             String end = props.get("endFadeIn");
             String out = props.get("endFadeOut");

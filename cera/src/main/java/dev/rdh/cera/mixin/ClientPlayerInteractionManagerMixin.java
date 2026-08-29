@@ -22,16 +22,16 @@ public class ClientPlayerInteractionManagerMixin {
     @Inject(method = "useBlock", at = @At("HEAD"))
     private void cera$rememberBlock(LocalClientPlayerEntity player, ClientWorld world, ItemStack itemInHand, BlockPos pos,
                                     Direction face, Vec3d facePos, CallbackInfoReturnable<Boolean> cir) {
-        Minecraft.getInstance().cera$getCustomGuis().interactedWith(pos);
+        Minecraft.getInstance().getTextureManager().cera$getCustomGuis().interactedWith(pos);
     }
 
-    @Inject(method = {"interactEntity"}, at = @At("HEAD"))
+    @Inject(method = "interactEntity", at = @At("HEAD"))
     private void cera$rememberEntity(PlayerEntity player, Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        Minecraft.getInstance().cera$getCustomGuis().interactedWith(entity);
+        Minecraft.getInstance().getTextureManager().cera$getCustomGuis().interactedWith(entity);
     }
 
     @Inject(method = "interactEntityAt", at = @At("HEAD"))
     private void cera$rememberEntityAt(PlayerEntity player, Entity entity, HitResult hit, CallbackInfoReturnable<Boolean> cir) {
-        Minecraft.getInstance().cera$getCustomGuis().interactedWith(entity);
+        Minecraft.getInstance().getTextureManager().cera$getCustomGuis().interactedWith(entity);
     }
 }

@@ -136,7 +136,7 @@ public record Props(NamespacedIdentifier id, Properties properties) {
 		List<Identifier> ids = new ArrayList<>();
 		for (String part : value.split("\\s+")) {
 			if (part.isEmpty()) continue;
-			ids.add(parseId(part, this.id));
+			ids.add(this.parseId(part));
 		}
 		return Result.success(List.copyOf(ids));
 	}
@@ -147,6 +147,10 @@ public record Props(NamespacedIdentifier id, Properties properties) {
 			return Result.success(null);
 		}
 		return NumberList.parse(value);
+	}
+
+	public Identifier parseId(String value) {
+		return parseId(value, this.id);
 	}
 
 	public static Identifier parseId(String value, NamespacedIdentifier current) {
